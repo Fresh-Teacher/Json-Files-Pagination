@@ -10,6 +10,22 @@
     .search-bar {
       margin-bottom: 20px;
     }
+/* Styling for the footer */
+.footer {
+      background-color: #f8f9fa;
+      padding: 0.5rem 0; /* Decreased padding for the top and bottom */
+      text-align: center;
+      margin-top: 2rem; /* Added margin between footer and pagination buttons */
+    }
+
+    .footer a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
 
     /* Styling for the app bar */
     .navbar {
@@ -62,6 +78,18 @@
       <button id="nextPageButton" class="btn btn-primary">Next Page</button>
     </div>
   </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        &copy; <span id="currentYear"></span> Fresh Teacher Software. All Rights Reserved.
+        <br>
+        <a href="tel:+254750687790">0750687790</a> / <a href="tel:+254786812837">0786812837</a>
+        <br>
+        <a href="mailto:freshteacher.software@gmail.com">freshteacher.software@gmail.com</a>
+      </p>
+    </div>
+  </footer>
 
   <script>
     const itemsPerPage = 21; // Number of items to display per page
@@ -1352,6 +1380,11 @@
     filteredItems = itemsData;
     displayCurrentPageItems();
     updatePaginationButtons();
+
+// Dynamically update the current year
+    const currentYearElement = document.getElementById('currentYear');
+    const currentYear = new Date().getFullYear();
+    currentYearElement.textContent = currentYear.toString();
   </script>
-</body>
+  </body>
 </html>
