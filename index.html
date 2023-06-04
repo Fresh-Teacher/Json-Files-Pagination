@@ -76,8 +76,6 @@
         <button id="prev-button" class="pdf-button">&lt;</button>
         <button id="next-button" class="pdf-button">&gt;</button>
         <span id="page-numbers"></span>
-        <button id="zoom-in-button" class="pdf-button">+</button>
-        <button id="zoom-out-button" class="pdf-button">-</button>
         <button id="close-button" class="pdf-button">Close</button>
       </div>
     </div>
@@ -90,6 +88,116 @@
       // Sample data
       const items = [
       {
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physic Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematic Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physic Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematic Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physic Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematic Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },{
           title: 'Mathematics Textbook',
           description: 'A comprehensive guide to mathematics',
           price: 19.99,
@@ -212,8 +320,6 @@ function loadPDF(url) {
   const canvas = document.getElementById('pdf-canvas');
   const prevButton = document.getElementById('prev-button');
   const nextButton = document.getElementById('next-button');
-  const zoomInButton = document.getElementById('zoom-in-button');
-  const zoomOutButton = document.getElementById('zoom-out-button');
   const pageNumbers = document.getElementById('page-numbers');
   let currentZoom = 1;
 
@@ -240,18 +346,6 @@ function loadPDF(url) {
         renderPage(pdf, currentPage);
         pageNumbers.textContent = `Page ${currentPage} of ${totalPages}`;
         updatePageButtons(currentPage, totalPages);
-      }
-    });
-
-    zoomInButton.addEventListener('click', () => {
-      currentZoom += 0.2;
-      renderPage(pdf, currentPage, currentZoom);
-    });
-
-    zoomOutButton.addEventListener('click', () => {
-      if (currentZoom > 0.2) {
-        currentZoom -= 0.2;
-        renderPage(pdf, currentPage, currentZoom);
       }
     });
   });
@@ -330,17 +424,19 @@ initializeApp();
     </script>
 
   </div>
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-12">
-        <div class="text-center">
-          <button id="prev-page" class="btn btn-primary mr-2">Previous Page</button>
-          <button id="next-page" class="btn btn-primary">Next Page</button>
-          <span id="page-info" class="mx-3"></span>
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="text-center">
+            <button id="prev-page" class="btn btn-primary mr-2">Previous Page</button>
+            <button id="next-page" class="btn btn-primary">Next Page</button>
+            <span id="page-info" class="mx-3"></span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+
   
   
   <!-- Footer -->
