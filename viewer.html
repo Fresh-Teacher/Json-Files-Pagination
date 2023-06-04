@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Viewer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    #pdf-container {
+      height: calc(100vh - 100px); /* Adjust the height to leave space for the buttons and footer */
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #pdf-canvas {
+      border: 1px solid #333;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    
+    .nav-buttons {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .nav-button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .close-button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <a href="https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf" target="_blank">Open PDF</a>
+
+  <div id="pdf-container">
+    <canvas id="pdf-canvas"></canvas>
+    <div class="nav-buttons">
+      <button class="btn btn-primary" id="prev-button" style="display: none;">&lt; Previous</button>
+      <div id="page-numbers"></div>
+      <button class="btn btn-primary" id="next-button">Next &gt;</button>
+      <button class="btn btn-danger close-button" id="close-button">Close &#10006;</button>
+    </div>
+  </div>
+
+  <div class="footer" id="footer">&copy; Fresh Teacher Software <span id="current-year"></span></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+  <script>
+    let pdf = null;
+    let currentPage = 1;
+
+    // Specify the path to the worker source file
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+
+    function renderPage(pageNumber) {
+      pdf.getPage(pageNumber).then((page) => {
+        const canvas = document.getElementById('pdf-canvas');
+        const context = canvas.getContext('2d');
+
+        const viewport = page.getViewport({ scale: 1 });
+
+        const canvasWidth = container.clientWidth;
+        const canvasHeight = (canvasWidth * viewport.height) / viewport.width;
+
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+
+        const scale = canvasWidth / viewport.width;
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: page.getViewport({ scale }),
+        };
+        page.render(renderContext);
+      });
+    }
+
+    function showPage(pageNumber) {
+      if (pageNumber <= 0 || pageNumber > pdf.numPages) {
+        return;
+      }
+
+      currentPage = pageNumber;
+      renderPage(currentPage);
+
+      const prevButton = document.getElementById('prev-button');
+      const nextButton = document.getElementById('next-button');
+
+      prevButton.style.display = (currentPage === 1) ? 'none' : 'inline-block';
+      nextButton.style.display = (currentPage === pdf.numPages) ? 'none' : 'inline-block';
+
+      const pageNumbers = document.getElementById('page-numbers');
+      pageNumbers.textContent = `Page ${currentPage} of ${pdf.numPages}`;
+    }
+
+    function loadPDF(url) {
+      pdfjsLib.getDocument(url).promise.then((loadedPdf) => {
+        pdf = loadedPdf;
+        showPage(1);
+      })
+      .catch((error) => {
+        console.error('Error loading PDF:', error);
+      });
+    }
+
+    const container = document.getElementById('pdf-container');
+    const pdfUrl = 'https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf';
+
+    // Remove the default click behavior of the link
+    const link = document.querySelector('a[href="' + pdfUrl + '"]');
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      loadPDF(pdfUrl);
+    });
+
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+    const closeButton = document.getElementById('close-button');
+
+    prevButton.addEventListener('click', () => {
+      showPage(currentPage - 1);
+    });
+
+    nextButton.addEventListener('click', () => {
+      showPage(currentPage + 1);
+    });
+
+    closeButton.addEventListener('click', () => {
+      container.style.display = 'none'; // Hide the PDF viewer container
+    });
+
+    // Update the current year in the footer
+    const currentYearElement = document.getElementById('current-year');
+    const currentYear = new Date().getFullYear();
+    currentYearElement.textContent = currentYear.toString();
+  </script>
+</body>
+</html>

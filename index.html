@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>PDF Viewer</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
       margin: 0;
@@ -12,7 +13,7 @@
     }
     
     #pdf-container {
-      height: calc(100vh - 100px); /* Adjust the height to leave space for the buttons and footer */
+      height: calc(100vh - 100px);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -31,6 +32,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-wrap: wrap;
     }
     
     .nav-button {
@@ -41,6 +43,7 @@
 
     .close-button {
       margin-left: 10px;
+      margin-right: 10px;
       padding: 5px 10px;
       background-color: red;
       color: white;
@@ -57,15 +60,23 @@
   </style>
 </head>
 <body>
-  <a href="https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf" target="_blank">Open PDF</a>
+  <div id="pdf-links-container">
+    <a href="https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf" class="pdf-link">Lesson Notes</a>
+    <a href="https://freshteacher.software/wakisha%20Ent%203.pdf" class="pdf-link">Past Papers</a>
+    <!-- Add more PDF file links as needed -->
+  </div>
 
   <div id="pdf-container">
     <canvas id="pdf-canvas"></canvas>
     <div class="nav-buttons">
-      <button class="btn btn-primary" id="prev-button" style="display: none;">&lt; Previous</button>
+      <button class="btn btn-primary" id="prev-button" style="display: none;">&lt; Previous Page</button>
       <div id="page-numbers"></div>
-      <button class="btn btn-primary" id="next-button">Next &gt;</button>
-      <button class="btn btn-danger close-button" id="close-button">Close &#10006;</button>
+      <button class="btn btn-primary" id="next-button">Next Page&gt;</button>
+      <div>
+        <button class="btn btn-secondary" id="zoom-in-button"><i class="fas fa-search-plus"></i> Zoom In</button>
+        <button class="btn btn-secondary" id="zoom-out-button"><i class="fas fa-search-minus"></i> Zoom Out</button>
+      </div>
+      <button class="btn btn-danger close-button" id="close-button">Close Preview&#10006;</button>
     </div>
   </div>
 
@@ -75,8 +86,8 @@
   <script>
     let pdf = null;
     let currentPage = 1;
+    let currentZoom = 1;
 
-    // Specify the path to the worker source file
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
 
     function renderPage(pageNumber) {
@@ -84,7 +95,7 @@
         const canvas = document.getElementById('pdf-canvas');
         const context = canvas.getContext('2d');
 
-        const viewport = page.getViewport({ scale: 1 });
+        const viewport = page.getViewport({ scale: currentZoom });
 
         const canvasWidth = container.clientWidth;
         const canvasHeight = (canvasWidth * viewport.height) / viewport.width;
@@ -92,20 +103,11 @@
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
 
-        const scale = canvasWidth / viewport.width;
-
         const renderContext = {
           canvasContext: context,
-          viewport: page.getViewport({ scale }),
+          viewport: page.getViewport({ scale: currentZoom }),
         };
         page.render(renderContext);
-      }, {
-        // Adjust the rendering options
-        scale: 1.5, // Experiment with different scale values
-        renderInteractiveForms: true,
-        renderTextLayer: true,
-        textLayerMode: 0,
-        // Add more options as needed
       });
     }
 
@@ -137,19 +139,25 @@
       });
     }
 
-    const container = document.getElementById('pdf-container');
-    const pdfUrl = 'https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf';
-
-    // Remove the default click behavior of the link
-    const link = document.querySelector('a[href="' + pdfUrl + '"]');
-    link.addEventListener('click', (event) => {
+    function openPDF(event) {
       event.preventDefault();
+      const pdfUrl = event.target.href;
       loadPDF(pdfUrl);
+    }
+
+    const container = document.getElementById('pdf-container');
+    const pdfLinksContainer = document.getElementById('pdf-links-container');
+    const pdfLinks = pdfLinksContainer.getElementsByClassName('pdf-link');
+
+    Array.from(pdfLinks).forEach((link) => {
+      link.addEventListener('click', openPDF);
     });
 
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
     const closeButton = document.getElementById('close-button');
+    const zoomInButton = document.getElementById('zoom-in-button');
+    const zoomOutButton = document.getElementById('zoom-out-button');
 
     prevButton.addEventListener('click', () => {
       showPage(currentPage - 1);
@@ -160,10 +168,71 @@
     });
 
     closeButton.addEventListener('click', () => {
-      container.style.display = 'none'; // Hide the PDF viewer container
+      container.style.display = 'none';
     });
 
-    // Update the current year in the footer
+    zoomInButton.addEventListener('click', () => {
+      currentZoom += 0.1;
+      renderPage(currentPage);
+    });
+
+    zoomOutButton.addEventListener('click', () => {
+      currentZoom -= 0.1;
+      renderPage(currentPage);
+    });
+
+    const canvas = document.getElementById('pdf-canvas');
+
+    let startX = 0;
+    let startY = 0;
+    let initialPinchDistance = 0;
+    let initialScale = 1;
+    let isDragging = false;
+
+    canvas.addEventListener('touchstart', (event) => {
+      if (event.touches.length === 2) {
+        // Pinch gesture
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+        initialPinchDistance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        initialScale = canvas.style.transform ? parseFloat(canvas.style.transform.split(' ')[1]) : 1;
+      } else if (event.touches.length === 1) {
+        // Single touch for dragging
+        startX = event.touches[0].clientX;
+        startY = event.touches[0].clientY;
+        isDragging = true;
+      }
+    });
+
+    canvas.addEventListener('touchmove', (event) => {
+      if (event.touches.length === 2) {
+        // Pinch gesture
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+        const currentPinchDistance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        const deltaDistance = currentPinchDistance - initialPinchDistance;
+        const scaleFactor = initialScale + (deltaDistance * 0.01);
+        canvas.style.transform = `scale(${scaleFactor})`;
+      } else if (event.touches.length === 1 && isDragging) {
+        // Single touch for dragging
+        const currentX = event.touches[0].clientX;
+        const currentY = event.touches[0].clientY;
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        canvas.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+      }
+    });
+
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
     const currentYearElement = document.getElementById('current-year');
     const currentYear = new Date().getFullYear();
     currentYearElement.textContent = currentYear.toString();
