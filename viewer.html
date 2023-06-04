@@ -1,165 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PDF Viewer</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-    
     #pdf-container {
-      height: calc(100vh - 100px); /* Adjust the height to leave space for the buttons and footer */
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
     }
-    
-    #pdf-canvas {
-      border: 1px solid #333;
-      max-width: 100%;
-      max-height: 100%;
+
+    #pdf-controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #fff;
     }
-    
-    .nav-buttons {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .nav-button {
-      margin: 0 5px;
+
+    .pdf-button {
+      margin-right: 5px;
+      background-color: #428bca;
+      border: none;
+      color: #fff;
       padding: 5px 10px;
       cursor: pointer;
     }
 
-    .close-button {
-      margin-left: 10px;
-      padding: 5px 10px;
-      background-color: red;
-      color: white;
-      border: none;
-      cursor: pointer;
+    #pdf-canvas {
+      max-width: 100%;
+      max-height: 100%;
+      margin: auto;
+      display: block;
     }
 
     .footer {
-      background-color: #333;
-      color: #fff;
+      background-color: #f8f9fa;
+      padding: 20px 0;
       text-align: center;
-      padding: 10px;
     }
   </style>
 </head>
+
 <body>
-  <a href="https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf" target="_blank">Open PDF</a>
-
-  <div id="pdf-container">
-    <canvas id="pdf-canvas"></canvas>
-    <div class="nav-buttons">
-      <button class="btn btn-primary" id="prev-button" style="display: none;">&lt; Previous</button>
-      <div id="page-numbers"></div>
-      <button class="btn btn-primary" id="next-button">Next &gt;</button>
-      <button class="btn btn-danger close-button" id="close-button">Close &#10006;</button>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+      </div>
     </div>
-  </div>
 
-  <div class="footer" id="footer">&copy; Fresh Teacher Software <span id="current-year"></span></div>
+    <div class="row" id="itemContainer">
+      <!-- Items will be dynamically populated here -->
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
-  <script>
-    let pdf = null;
-    let currentPage = 1;
+    <div id="pdf-container">
+      <div id="pdf-controls">
+        <button id="prev-button" class="pdf-button">&lt;</button>
+        <button id="next-button" class="pdf-button">&gt;</button>
+        <span id="page-numbers"></span>
+        <button id="zoom-in-button" class="pdf-button">+</button>
+        <button id="zoom-out-button" class="pdf-button">-</button>
+        <button id="close-button" class="pdf-button">Close</button>
+      </div>
+      <canvas id="pdf-canvas"></canvas>
+    </div>
 
-    // Specify the path to the worker source file
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+    <div class="footer">
+      <div class="container">
+        <p>&copy; 2023 Fresh Teachers' App. All rights reserved. | Made with ❤️ by Fresh Teachers</p>
+      </div>
+    </div>
 
-    function renderPage(pageNumber) {
-      pdf.getPage(pageNumber).then((page) => {
-        const canvas = document.getElementById('pdf-canvas');
-        const context = canvas.getContext('2d');
+    <!-- Include the PDF.js library and dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js"></script>
 
-        const viewport = page.getViewport({ scale: 1 });
+    <script>
+      // Sample data
+      const items = [
+      {
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pd',
+        },
+        {
+          title: 'Chemistry Study Guide',
+          description: 'Key concepts and explanations for chemistry',
+          price: 12.99,
+          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pd',
+        },
+        {
+          title: 'Chemistry Study Guide',
+          description: 'Key concepts and explanations for chemistry',
+          price: 12.99,
+          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
+        },{
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pd',
+        },
+        {
+          title: 'Chemistry Study Guide',
+          description: 'Key concepts and explanations for chemistry',
+          price: 12.99,
+          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
+        },
+      ];
 
-        const canvasWidth = container.clientWidth;
-        const canvasHeight = (canvasWidth * viewport.height) / viewport.width;
-
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-
-        const scale = canvasWidth / viewport.width;
-
-        const renderContext = {
-          canvasContext: context,
-          viewport: page.getViewport({ scale }),
-        };
-        page.render(renderContext);
-      });
-    }
-
-    function showPage(pageNumber) {
-      if (pageNumber <= 0 || pageNumber > pdf.numPages) {
-        return;
+      // Function to initialize the app
+      function initializeApp() {
+        renderItems(items);
+        addSearchFunctionality();
       }
 
-      currentPage = pageNumber;
-      renderPage(currentPage);
+      // Function to render the items
+      function renderItems(items) {
+        const itemContainer = document.getElementById('itemContainer');
+        itemContainer.innerHTML = '';
 
-      const prevButton = document.getElementById('prev-button');
-      const nextButton = document.getElementById('next-button');
+        for (const item of items) {
+          const card = document.createElement('div');
+          card.classList.add('card', 'mb-3');
 
-      prevButton.style.display = (currentPage === 1) ? 'none' : 'inline-block';
-      nextButton.style.display = (currentPage === pdf.numPages) ? 'none' : 'inline-block';
+          const cardBody = document.createElement('div');
+          cardBody.classList.add('card-body');
 
-      const pageNumbers = document.getElementById('page-numbers');
-      pageNumbers.textContent = `Page ${currentPage} of ${pdf.numPages}`;
-    }
+          const cardTitle = document.createElement('h5');
+          cardTitle.classList.add('card-title');
+          cardTitle.textContent = item.title;
 
-    function loadPDF(url) {
-      pdfjsLib.getDocument(url).promise.then((loadedPdf) => {
-        pdf = loadedPdf;
-        showPage(1);
-      })
-      .catch((error) => {
-        console.error('Error loading PDF:', error);
-      });
-    }
+          const cardDescription = document.createElement('p');
+          cardDescription.classList.add('card-text');
+          cardDescription.textContent = item.description;
 
-    const container = document.getElementById('pdf-container');
-    const pdfUrl = 'https://freshteacher.software/Middle%20Numbers%20Term%20III%20Lesson%20Notes.pdf';
+          const cardPrice = document.createElement('p');
+          cardPrice.classList.add('card-text');
+          cardPrice.textContent = `Price: $${item.price.toFixed(2)}`;
 
-    // Remove the default click behavior of the link
-    const link = document.querySelector('a[href="' + pdfUrl + '"]');
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      loadPDF(pdfUrl);
-    });
+          const cardLink = document.createElement('a');
+          cardLink.classList.add('btn', 'btn-primary');
+          cardLink.href = item.link;
+          cardLink.target = '_blank';
+          cardLink.textContent = 'Download';
 
-    const prevButton = document.getElementById('prev-button');
-    const nextButton = document.getElementById('next-button');
-    const closeButton = document.getElementById('close-button');
+          const previewButton = document.createElement('button');
+          previewButton.classList.add('btn', 'btn-secondary', 'ml-2');
+          previewButton.textContent = 'Preview';
+          previewButton.addEventListener('click', () => {
+            openPreview(item.link);
+          });
+
+          cardBody.appendChild(cardTitle);
+          cardBody.appendChild(cardDescription);
+          cardBody.appendChild(cardPrice);
+          cardBody.appendChild(cardLink);
+          cardBody.appendChild(previewButton);
+          card.appendChild(cardBody);
+          itemContainer.appendChild(card);
+        }
+      }
+
+      // Function to open the preview of the PDF
+      function openPreview(url) {
+        const container = document.getElementById('pdf-container');
+        const closeButton = document.getElementById('close-button');
+
+        container.style.display = 'block';
+        loadPDF(url);
+
+        closeButton.addEventListener('click', () => {
+          closePreview();
+        });
+      }
+
+      // Function to close the PDF preview
+      function closePreview() {
+        const container = document.getElementById('pdf-container');
+        container.style.display = 'none';
+      }
+
+      // Function to load the PDF and display it in the preview
+      function loadPDF(url) {
+  const canvas = document.getElementById('pdf-canvas');
+  const prevButton = document.getElementById('prev-button');
+  const nextButton = document.getElementById('next-button');
+  const zoomInButton = document.getElementById('zoom-in-button');
+  const zoomOutButton = document.getElementById('zoom-out-button');
+  const pageNumbers = document.getElementById('page-numbers');
+  let currentZoom = 1;
+
+  pdfjsLib.getDocument(url).promise.then(pdf => {
+    let currentPage = 1;
+    let totalPages = pdf.numPages;
 
     prevButton.addEventListener('click', () => {
-      showPage(currentPage - 1);
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage(currentPage);
+      }
     });
 
     nextButton.addEventListener('click', () => {
-      showPage(currentPage + 1);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderPage(currentPage);
+      }
     });
 
-    closeButton.addEventListener('click', () => {
-      container.style.display = 'none'; // Hide the PDF viewer container
+    zoomInButton.addEventListener('click', () => {
+      currentZoom += 0.1;
+      renderPage(currentPage);
     });
 
-    // Update the current year in the footer
-    const currentYearElement = document.getElementById('current-year');
-    const currentYear = new Date().getFullYear();
-    currentYearElement.textContent = currentYear.toString();
-  </script>
+    zoomOutButton.addEventListener('click', () => {
+      currentZoom -= 0.1;
+      renderPage(currentPage);
+    });
+
+    function renderPage(pageNumber) {
+      pdf.getPage(pageNumber).then(page => {
+        const viewport = page.getViewport({ scale: currentZoom });
+        const context = canvas.getContext('2d');
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        page.render({
+          canvasContext: context,
+          viewport: viewport,
+        });
+
+        pageNumbers.textContent = `Page ${pageNumber} of ${totalPages}`;
+      });
+    }
+
+    renderPage(currentPage);
+  }).catch(error => {
+    console.error('Error loading PDF:', error);
+    closePreview();
+  });
+}
+
+
+      // Function to add search functionality
+      function addSearchFunctionality() {
+        const searchInput = document.getElementById('searchInput');
+        const itemContainer = document.getElementById('itemContainer');
+
+        searchInput.addEventListener('input', () => {
+          const searchValue = searchInput.value.toLowerCase();
+          const filteredItems = items.filter(item => {
+            return item.title.toLowerCase().includes(searchValue) ||
+              item.description.toLowerCase().includes(searchValue);
+          });
+
+          renderItems(filteredItems);
+        });
+      }
+
+      // Initialize the app
+      initializeApp();
+    </script>
+  </div>
 </body>
+
 </html>
