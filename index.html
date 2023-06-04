@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PDF Viewer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <style>
     body {
       margin: 0;
@@ -11,7 +12,7 @@
     }
     
     #pdf-container {
-      height: calc(100vh - 50px); /* Adjust the height to leave space for the footer */
+      height: calc(100vh - 100px); /* Adjust the height to leave space for the buttons and footer */
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -35,8 +36,15 @@
     .nav-button {
       margin: 0 5px;
       padding: 5px 10px;
-      background-color: #eee;
-      border: 1px solid #333;
+      cursor: pointer;
+    }
+
+    .close-button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      background-color: red;
+      color: white;
+      border: none;
       cursor: pointer;
     }
 
@@ -54,8 +62,10 @@
   <div id="pdf-container">
     <canvas id="pdf-canvas"></canvas>
     <div class="nav-buttons">
-      <div class="nav-button" id="prev-button">&lt; Previous</div>
-      <div class="nav-button" id="next-button">Next &gt;</div>
+      <button class="btn btn-primary" id="prev-button" style="display: none;">&lt; Previous</button>
+      <div id="page-numbers"></div>
+      <button class="btn btn-primary" id="next-button">Next &gt;</button>
+      <button class="btn btn-danger close-button" id="close-button">Close &#10006;</button>
     </div>
   </div>
 
@@ -103,8 +113,11 @@
       const prevButton = document.getElementById('prev-button');
       const nextButton = document.getElementById('next-button');
 
-      prevButton.disabled = currentPage === 1;
-      nextButton.disabled = currentPage === pdf.numPages;
+      prevButton.style.display = (currentPage === 1) ? 'none' : 'inline-block';
+      nextButton.style.display = (currentPage === pdf.numPages) ? 'none' : 'inline-block';
+
+      const pageNumbers = document.getElementById('page-numbers');
+      pageNumbers.textContent = `Page ${currentPage} of ${pdf.numPages}`;
     }
 
     function loadPDF(url) {
@@ -129,6 +142,7 @@
 
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
+    const closeButton = document.getElementById('close-button');
 
     prevButton.addEventListener('click', () => {
       showPage(currentPage - 1);
@@ -136,6 +150,10 @@
 
     nextButton.addEventListener('click', () => {
       showPage(currentPage + 1);
+    });
+
+    closeButton.addEventListener('click', () => {
+      container.style.display = 'none'; // Hide the PDF viewer container
     });
 
     // Update the current year in the footer
