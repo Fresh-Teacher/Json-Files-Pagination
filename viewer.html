@@ -1,299 +1,264 @@
+But in the initial code I gave you there was pagination where 21 items are displayed per page in otder to prevent consuming a lot of moemory but in this code you removed it. This is the code I gave you in the first place so that you modify it and add the preview button but after the modification, you have removed the pagination, the header, changed the footer text and even removed the floating whatsapp icon:
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDF Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    #pdf-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-    }
+    /* Add your custom styles here */
 
-    #pdf-controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #fff;
+    /* Styling for the search bar */
+    .search-bar {
+      margin-bottom: 20px;
     }
+/* Styling for the footer */
+.footer {
+    background-color: #525354;
+        color: #ffffff;
 
-    .pdf-button {
-      margin-right: 5px;
-      background-color: #428bca;
-      border: none;
-      color: #fff;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    #pdf-canvas {
-      max-width: 100%;
-      max-height: 100%;
-      margin: auto;
-      display: block;
-    }
-
-    .footer {
-      background-color: #f8f9fa;
-      padding: 20px 0;
+      padding: 0.5rem 0; /* Decreased padding for the top and bottom */
       text-align: center;
+      margin-top: 2rem; /* Added margin between footer and pagination buttons */
     }
+
+    .footer a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+     /* Styling for the floating WhatsApp button */
+     .floating-whatsapp {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      padding: 10px;
+    }
+
+    /* Styling for the app bar */
+    .navbar {
+      width: 100%;
+      background-color: #f8f9fa;
+      padding: 0.5rem 0;  /* Decreased padding for the top and bottom */
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-right: 10px;
+    }
+
+    
+   
   </style>
 </head>
-
 <body>
+  <nav class="navbar">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="logo.jpg" alt="Logo">
+        <b>FRESH TEACHERS' APP</b>
+      </a>
+      <p class="text-center"><strong><em>Learn. Unlearn. Relearn</em></strong></p>
+    </div>
+  </nav>
+
   <div class="container">
-    <div class="row">
-      <div class="col-12 mb-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-      </div>
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search items...">
     </div>
 
+    <!-- Item cards -->
     <div class="row" id="itemContainer">
       <!-- Items will be dynamically populated here -->
     </div>
 
-    <div id="pdf-container">
-      <div id="pdf-controls">
-        <button id="prev-button" class="pdf-button">&lt;</button>
-        <button id="next-button" class="pdf-button">&gt;</button>
-        <span id="page-numbers"></span>
-        <button id="zoom-in-button" class="pdf-button">+</button>
-        <button id="zoom-out-button" class="pdf-button">-</button>
-        <button id="close-button" class="pdf-button">Close</button>
-      </div>
-      <canvas id="pdf-canvas"></canvas>
+    <!-- Pagination buttons -->
+    <div class="d-flex justify-content-center mt-4">
+      <button id="prevPageButton" class="btn btn-primary" style="display: none;">Previous Page</button>
+      <span id="currentPage" class="mr-3"></span>
+      <button id="nextPageButton" class="btn btn-primary">Next Page</button>
     </div>
+  </div>
 
-    <div class="footer">
-      <div class="container">
-        <p>&copy; 2023 Fresh Teachers' App. All rights reserved. | Made with ❤️ by Fresh Teachers</p>
-      </div>
+  <footer class="footer">
+    <div class="container">
+      <p>        Coded with <span style="color: red;">❦</span> by Mutumba Jesse Paul        <br>
+        &copy; Fresh Teacher Software <span id="currentYear"> </span><br>
+        <a href="tel:+256750687790">0750687790</a> / <a href="tel:+256786812837">0786812837</a>
+      </p>
     </div>
+  </footer>
+  
+   <!-- Floating WhatsApp button -->
+   <a href="https://api.whatsapp.com/send?phone=+256750687790&text=Hi%20Fresh%20Teacher" class="floating-whatsapp">
+    <img src="whatsapp-logo.png" alt="WhatsApp" width="50">
+  </a>
 
-    <!-- Include the PDF.js library and dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js"></script>
+  <script>
+    const itemsPerPage = 21; // Number of items to display per page
+    let currentPage = parseInt(localStorage.getItem('currentPage')) || 1; // Current page number
+    let filteredItems = []; // Array to store filtered items
 
-    <script>
-      // Sample data
-      const items = [
-      {
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pd',
-        },
-        {
-          title: 'Chemistry Study Guide',
-          description: 'Key concepts and explanations for chemistry',
-          price: 12.99,
-          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pd',
-        },
-        {
-          title: 'Chemistry Study Guide',
-          description: 'Key concepts and explanations for chemistry',
-          price: 12.99,
-          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pd',
-        },
-        {
-          title: 'Chemistry Study Guide',
-          description: 'Key concepts and explanations for chemistry',
-          price: 12.99,
-          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
-        },
-      ];
+    // Sample JSON data (replace with your actual data)
+    const itemsData = [
+    {
+        title: 'SST P.7 LESSON NOTES.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/SST P.7 LESSON NOTES.pdf',
+      },{
+        title: 'SST P.7 LESSON NOTES.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/SST P.7 LESSON NOTES.pdf',
+      },
+      
+      
+      
+    ];
 
-      // Function to initialize the app
-      function initializeApp() {
-        renderItems(items);
-        addSearchFunctionality();
+    // Function to display items on the current page
+    function displayItems(items) {
+      const itemContainer = document.getElementById('itemContainer');
+      itemContainer.innerHTML = '';
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+
+        const card = document.createElement('div');
+        card.classList.add('col-md-4', 'mb-4');
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card', 'h-100');
+
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.textContent = item.title;
+
+        const cardDescription = document.createElement('p');
+        cardDescription.classList.add('card-text');
+        cardDescription.textContent = item.description;
+
+        const cardPrice = document.createElement('p');
+        cardPrice.classList.add('card-text');
+        cardPrice.textContent = `Price: $${item.price}`;
+
+        const cardLink = document.createElement('a');
+        cardLink.classList.add('btn', 'btn-primary');
+        cardLink.href = item.link;
+        cardLink.target = '_blank';
+        cardLink.textContent = 'Download';
+
+        cardBody.appendChild(cardTitle);
+        cardBody.appendChild(cardDescription);
+        cardBody.appendChild(cardPrice);
+        cardBody.appendChild(cardLink);
+        card.appendChild(cardBody);
+        itemContainer.appendChild(card);
       }
-
-      // Function to render the items
-      function renderItems(items) {
-        const itemContainer = document.getElementById('itemContainer');
-        itemContainer.innerHTML = '';
-
-        for (const item of items) {
-          const card = document.createElement('div');
-          card.classList.add('card', 'mb-3');
-
-          const cardBody = document.createElement('div');
-          cardBody.classList.add('card-body');
-
-          const cardTitle = document.createElement('h5');
-          cardTitle.classList.add('card-title');
-          cardTitle.textContent = item.title;
-
-          const cardDescription = document.createElement('p');
-          cardDescription.classList.add('card-text');
-          cardDescription.textContent = item.description;
-
-          const cardPrice = document.createElement('p');
-          cardPrice.classList.add('card-text');
-          cardPrice.textContent = `Price: $${item.price.toFixed(2)}`;
-
-          const cardLink = document.createElement('a');
-          cardLink.classList.add('btn', 'btn-primary');
-          cardLink.href = item.link;
-          cardLink.target = '_blank';
-          cardLink.textContent = 'Download';
-
-          const previewButton = document.createElement('button');
-          previewButton.classList.add('btn', 'btn-secondary', 'ml-2');
-          previewButton.textContent = 'Preview';
-          previewButton.addEventListener('click', () => {
-            openPreview(item.link);
-          });
-
-          cardBody.appendChild(cardTitle);
-          cardBody.appendChild(cardDescription);
-          cardBody.appendChild(cardPrice);
-          cardBody.appendChild(cardLink);
-          cardBody.appendChild(previewButton);
-          card.appendChild(cardBody);
-          itemContainer.appendChild(card);
-        }
-      }
-
-      // Function to open the preview of the PDF
-      function openPreview(url) {
-        const container = document.getElementById('pdf-container');
-        const closeButton = document.getElementById('close-button');
-
-        container.style.display = 'block';
-        loadPDF(url);
-
-        closeButton.addEventListener('click', () => {
-          closePreview();
-        });
-      }
-
-      // Function to close the PDF preview
-      function closePreview() {
-        const container = document.getElementById('pdf-container');
-        container.style.display = 'none';
-      }
-
-      // Function to load the PDF and display it in the preview
-      function loadPDF(url) {
-  const canvas = document.getElementById('pdf-canvas');
-  const prevButton = document.getElementById('prev-button');
-  const nextButton = document.getElementById('next-button');
-  const zoomInButton = document.getElementById('zoom-in-button');
-  const zoomOutButton = document.getElementById('zoom-out-button');
-  const pageNumbers = document.getElementById('page-numbers');
-  let currentZoom = 1;
-
-  pdfjsLib.getDocument(url).promise.then(pdf => {
-    let currentPage = 1;
-    let totalPages = pdf.numPages;
-
-    prevButton.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderPage(currentPage);
-      }
-    });
-
-    nextButton.addEventListener('click', () => {
-      if (currentPage < totalPages) {
-        currentPage++;
-        renderPage(currentPage);
-      }
-    });
-
-    zoomInButton.addEventListener('click', () => {
-      currentZoom += 0.1;
-      renderPage(currentPage);
-    });
-
-    zoomOutButton.addEventListener('click', () => {
-      currentZoom -= 0.1;
-      renderPage(currentPage);
-    });
-
-    function renderPage(pageNumber) {
-      pdf.getPage(pageNumber).then(page => {
-        const viewport = page.getViewport({ scale: currentZoom });
-        const context = canvas.getContext('2d');
-
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        page.render({
-          canvasContext: context,
-          viewport: viewport,
-        });
-
-        pageNumbers.textContent = `Page ${pageNumber} of ${totalPages}`;
-      });
     }
 
-    renderPage(currentPage);
-  }).catch(error => {
-    console.error('Error loading PDF:', error);
-    closePreview();
-  });
-}
+    // Function to filter items based on the search query
+    function filterItems(query) {
+      const filtered = itemsData.filter((item) => {
+        const title = item.title.toLowerCase();
+        const description = item.description.toLowerCase();
+        return title.includes(query) || description.includes(query);
+      });
+      return filtered;
+    }
 
+    // Function to handle search input changes
+    function handleSearchInput(event) {
+      const searchQuery = event.target.value.toLowerCase();
+      const filtered = filterItems(searchQuery);
+      filteredItems = filtered;
+      currentPage = 1;
+      updatePaginationButtons();
+      displayCurrentPageItems();
+    }
 
-      // Function to add search functionality
-      function addSearchFunctionality() {
-        const searchInput = document.getElementById('searchInput');
-        const itemContainer = document.getElementById('itemContainer');
+    // Function to display items on the current page
+    function displayCurrentPageItems() {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const itemsToShow = filteredItems.slice(startIndex, endIndex);
+      displayItems(itemsToShow);
+      window.scrollTo(0, 0); // Scroll to top of page
+      document.getElementById('currentPage').textContent = `Page ${currentPage} of ${Math.ceil(filteredItems.length / itemsPerPage)}`;
+      localStorage.setItem('currentPage', currentPage); // Save current page to localStorage
+    }
 
-        searchInput.addEventListener('input', () => {
-          const searchValue = searchInput.value.toLowerCase();
-          const filteredItems = items.filter(item => {
-            return item.title.toLowerCase().includes(searchValue) ||
-              item.description.toLowerCase().includes(searchValue);
-          });
+    // Function to update the state of the pagination buttons
+    function updatePaginationButtons() {
+      const prevPageButton = document.getElementById('prevPageButton');
+      const nextPageButton = document.getElementById('nextPageButton');
 
-          renderItems(filteredItems);
-        });
+      if (currentPage === 1) {
+        prevPageButton.style.display = 'none';
+      } else {
+        prevPageButton.style.display = 'inline';
       }
 
-      // Initialize the app
-      initializeApp();
-    </script>
-  </div>
-</body>
+      if (currentPage === Math.ceil(filteredItems.length / itemsPerPage)) {
+        nextPageButton.style.display = 'none';
+      } else {
+        nextPageButton.style.display = 'inline';
+      }
+    }
 
+    // Function to handle the previous page button click
+    function handlePrevPageClick() {
+      if (currentPage > 1) {
+        currentPage--;
+        displayCurrentPageItems();
+        updatePaginationButtons();
+      }
+    }
+
+    // Function to handle the next page button click
+    function handleNextPageClick() {
+      const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayCurrentPageItems();
+        updatePaginationButtons();
+      }
+    }
+
+    // Add event listeners
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', handleSearchInput);
+
+    const prevPageButton = document.getElementById('prevPageButton');
+    prevPageButton.addEventListener('click', handlePrevPageClick);
+
+    const nextPageButton = document.getElementById('nextPageButton');
+    nextPageButton.addEventListener('click', handleNextPageClick);
+
+    // Initial setup
+    filteredItems = itemsData;
+    displayCurrentPageItems();
+    updatePaginationButtons();
+
+// Dynamically update the current year
+    const currentYearElement = document.getElementById('currentYear');
+    const currentYear = new Date().getFullYear();
+    currentYearElement.textContent = currentYear.toString();
+  </script>
+  </body>
 </html>
