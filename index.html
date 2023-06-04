@@ -20,7 +20,7 @@
 
     #pdf-controls {
       position: absolute;
-      bottom: 10px;
+      bottom: 10px; /* Updated: Placed at the bottom */
       left: 10px;
       color: #fff;
     }
@@ -45,11 +45,6 @@
       background-color: #f8f9fa;
       padding: 20px 0;
       text-align: center;
-    }
-
-    .pagination {
-      margin-top: 20px;
-      justify-content: center;
     }
   </style>
 </head>
@@ -87,10 +82,6 @@
       </div>
     </div>
 
-    <div id="pagination" class="pagination">
-      <!-- Pagination buttons will be dynamically populated here -->
-    </div>
-
     <!-- Include the PDF.js library and dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js"></script>
@@ -98,173 +89,227 @@
     <script>
       // Sample data
       const items = [
+        {
+          title: 'Mathematics Textbook',
+          description: 'A comprehensive guide to mathematics',
+          price: 19.99,
+          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+        },
+        {
+          title: 'Physics Workbook',
+          description: 'Exercises and practice problems for physics',
+          price: 14.99,
+          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
+        },
+        {
+          title: 'Chemistry Study Guide',
+          description: 'Key concepts and explanations for chemistry',
+          price: 12.99,
+          link: 'https://freshteacher.software/wakisha Ent 1.pdf',
+        },
+        {
+        title: 'SST P.7 LESSON NOTES.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/SST P.7 LESSON NOTES.pdf',
+      },
       {
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },{
-          title: 'Mathematics Textbook',
-          description: 'A comprehensive guide to mathematics',
-          price: 19.99,
-          link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
-        },
-        {
-          title: 'Physics Workbook',
-          description: 'Exercises and practice problems for physics',
-          price: 14.99,
-          link: 'https://freshteacher.software/wakisha Ent 2.pdf',
-        },
-        // ... more items
+        title: 'English P.7 Lesson Notes Term 1.pdf',
+        description: 'English',
+        price: 5000,
+        link: 'https://freshteacher.software/English P.7 Lesson Notes Term 1.pdf',
+      },
+      {
+        title: 'MTC P.7 LESSON NOTES TERM ONE.pdf',
+        description: 'MTC',
+        price: 5000,
+        link: 'https://freshteacher.software/MTC P.7 LESSON NOTES TERM ONE.pdf',
+      },
+      {
+        title: 'P. 7 COMPREHENSION NOTES.pdf',
+        description: 'ENGLISH',
+        price: 5000,
+        link: 'https://freshteacher.software/P. 7 COMPREHENSION NOTES.pdf',
+      },
+      {
+        title: 'P.7  SCIENCE TERM 1 LESSON NOTES.pdf',
+        description: 'SCIENCE',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7  SCIENCE TERM 1 LESSON NOTES.pdf',
+      },
+      {
+        title: 'P.7 C.R.E LESSON  NOTES.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 C.R.E LESSON  NOTES.pdf',
+      },
+      {
+        title: 'P.7 CHRISTIAN RELIGIOUS EDUCATION LESSON NOTES TERM I.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 CHRISTIAN RELIGIOUS EDUCATION LESSON NOTES TERM I.pdf',
+      },
+      {
+        title: 'P.7 CRE Lesson Notes Term 2.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 CRE Lesson Notes Term 2.pdf',
+      },
+      {
+        title: 'P.7 ENGLISH GRAMMAR LESSON  NOTES.pdf',
+        description: 'ENGLISH',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 ENGLISH GRAMMAR LESSON  NOTES.pdf',
+      },
+      {
+        title: 'P.7 ENGLISH LESSON NOTES TERM ONE.pdf',
+        description: 'ENGLISH',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 ENGLISH LESSON NOTES TERM ONE.pdf',
+      },
+      {
+        title: 'P.7 GRAMMAR LESSON NOTES.pdf',
+        description: 'English',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 GRAMMAR LESSON NOTES.pdf',
+      },
+      {
+        title: 'P.7 IRE LESSON NOTES TERM ONE.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 IRE LESSON NOTES TERM ONE.pdf',
+      },
+      {
+        title: 'P.7 LESSON NOTES  MATHS.pdf',
+        description: 'MATHS',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 LESSON NOTES  MATHS.pdf',
+      },
+      {
+        title: 'P.7 LESSON NOTES TERM 2 SST.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 LESSON NOTES TERM 2 SST.pdf',
+      },
+      {
+        title: 'P.7 NOTES MATHEMATICS.pdf',
+        description: 'MATHEMATICS',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 NOTES MATHEMATICS.pdf',
+      },
+      {
+        title: 'P.7 S.S.T LESSON  NOTES.pdf',
+        description: 'S.S.T',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 S.S.T LESSON  NOTES.pdf',
+      },
+      {
+        title: 'P.7 S.S.T NOTES TERM 2 AND 3.pdf',
+        description: 'S.S.T',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 S.S.T NOTES TERM 2 AND 3.pdf',
+      },
+      {
+        title: 'P.7 SCIENCE LESSON NOTES TERM ONE.pdf',
+        description: 'SCIENCE',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 SCIENCE LESSON NOTES TERM ONE.pdf',
+      },
+      {
+        title: 'P.7 SST  TERM ONE.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 SST  TERM ONE.pdf',
+      },
+      {
+        title: 'P.7 SST LESSON NOTES TERM 1.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 SST LESSON NOTES TERM 1.pdf',
+      },
+      {
+        title: 'P.7 SST LESSON NOTES TERM 2.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 SST LESSON NOTES TERM 2.pdf',
+      },
+      {
+        title: 'P.7 SST NOTES TERM 2 AND 3.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 SST NOTES TERM 2 AND 3.pdf',
+      },
+      {
+        title: 'P.7 SST TERM 2 LESSON NOTES.pdf',
+        description: 'SST',
+        price: 5000,
+        link: 'https://freshteacher.software/P.7 SST TERM 2 LESSON NOTES.pdf',
+      },
+      {
+        title: 'P7  SCIENCE LESSON  NOTES.pdf',
+        description: 'SCIENCE',
+        price: 5000,
+        link: 'https://freshteacher.software/P7  SCIENCE LESSON  NOTES.pdf',
+      },
+      {
+        title: 'P7 C.R.E LESSON NOTES TERM III.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P7 C.R.E LESSON NOTES TERM III.pdf',
+      },
+      {
+        title: 'P7 I.R.E  Lesson NOTES.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P7 I.R.E  Lesson NOTES.pdf',
+      },
+      {
+        title: 'P7 I.R.E TERM ONE LESSON NOTES.pdf',
+        description: 'Religious Education',
+        price: 5000,
+        link: 'https://freshteacher.software/P7 I.R.E TERM ONE LESSON NOTES.pdf',
+      },
+      {
+        title: 'P.7 COMPOSITION AND COMPREHENSION LESSON NOTES TERM 1 - 3',
+        description: 'English',
+        price: 10000,
+        link: 'https://freshteacher.software/P.7 COMPOSITION AND COMPREHENSION LESSON NOTES TERM 1 - 3.pdf',
+      },
+      {
+        title: 'P.7 GRAMMAR LESSON NOTES',
+        description: 'English',
+        price: 15000,
+        link: 'https://freshteacher.software/P.7 GRAMMAR LESSON NOTES.pdf',
+      },
+      {
+        title: 'P.7 MATHS NOTES TERM 1',
+        description: 'MATHS',
+        price: 25000,
+        link: 'https://freshteacher.software/P.7 MATHS NOTES TERM 1.pdf',
+      },
+      {
+        title: 'R.E LESSON NOTES TERM 1',
+        description: 'Religious Education',
+        price: 55000,
+        link: 'https://freshteacher.software/P.7 R.E LESSON NOTES TERM 1.pdf',
+      },
+      {
+        title: 'P.7 SST LESSON NOTES FOR TERM  I - III',
+        description: 'Social Studies',
+        price: 10000,
+        link: 'https://freshteacher.software/P.7 SST LESSON NOTES FOR TERM  I - III.pdf',
+      },
+      {
+        title: 'P7 SCIENCE  LESSON NOTES TERM 1 - 3',
+        description: 'SCIENCE',
+        price: 15000,
+        link: 'https://freshteacher.software/P7 SCIENCE  LESSON NOTES TERM 1 - 3.pdf',
+      },
       ];
-
-      // Variables for pagination
-      const itemsPerPage = 21;
-      let currentPage = 1;
-      const totalPages = Math.ceil(items.length / itemsPerPage);
 
       // Function to initialize the app
       function initializeApp() {
-        renderItems(items.slice(0, itemsPerPage)); // Render the first page of items
-        renderPagination();
+        renderItems(items);
         addSearchFunctionality();
       }
 
@@ -440,35 +485,6 @@
         }
       }
 
-      // Function to handle pagination
-      function goToPage(page) {
-        if (page < 1 || page > totalPages) {
-          return;
-        }
-
-        currentPage = page;
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const itemsToShow = items.slice(startIndex, endIndex);
-        renderItems(itemsToShow);
-      }
-
-      // Function to render pagination
-      function renderPagination() {
-        const paginationContainer = document.getElementById('paginationContainer');
-        paginationContainer.innerHTML = '';
-
-        for (let i = 1; i <= totalPages; i++) {
-          const pageButton = document.createElement('button');
-          pageButton.classList.add('page-button');
-          pageButton.textContent = i;
-          pageButton.addEventListener('click', () => {
-            goToPage(i);
-          });
-          paginationContainer.appendChild(pageButton);
-        }
-      }
-
       // Initialize the app
       initializeApp();
     </script>
@@ -480,6 +496,7 @@
       <span class="text-muted">© 2023 Fresh Teachers' App. All rights reserved.</span>
     </div>
   </footer>
+
 </body>
 
 </html>
