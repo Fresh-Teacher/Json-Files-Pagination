@@ -158,6 +158,23 @@
               description: 'Primary Seven',
               price: 10000,
               link: 'https://freshteacher.software/KCC ENG.pdf',
+          },  {
+              title: 'ITEM 7 MATH',
+              description: 'Primary Seven',
+              price: 10000,
+              link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
+          },
+          {
+              title: 'jubra exam',
+              description: 'Primary Seven',
+              price: 10000,
+              link: 'https://freshteacher.software/jubra exam.pdf',
+          },
+          {
+              title: 'KCC ENG',
+              description: 'Primary Seven',
+              price: 10000,
+              link: 'https://freshteacher.software/KCC ENG.pdf',
           },   
   ];
 
@@ -193,33 +210,11 @@ cardLink.href = item.link;
 cardLink.target = '_blank';
 cardLink.textContent = 'Open';
 
-
       const cardPreview = document.createElement('button');
       cardPreview.classList.add('btn', 'btn-secondary', 'mt-2');
       cardPreview.textContent = 'Preview';
       cardPreview.addEventListener('click', () => {
-        const overlay = document.createElement('div');
-        overlay.classList.add('overlay');
-
-        const iframe = document.createElement('iframe');
-        iframe.src = item.link;
-        iframe.width = '100%';
-        iframe.height = '500px';
-
-        const closeButton = document.createElement('button');
-        closeButton.classList.add('btn', 'btn-primary', 'close-button');
-        closeButton.textContent = 'Close Preview';
-        closeButton.addEventListener('click', () => {
-          previewOpen = false;
-          document.body.removeChild(overlay);
-          document.body.style.overflow = 'auto';
-        });
-
-        overlay.appendChild(iframe);
-        overlay.appendChild(closeButton);
-        document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
-        previewOpen = true;
+        window.open(item.link, '_blank').print();
       });
 
       cardBody.appendChild(cardTitle);
@@ -292,8 +287,7 @@ cardLink.textContent = 'Open';
 
   // Function to handle the next page button click
   function handleNextPageClick() {
-    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-    if (currentPage < totalPages && !previewOpen) {
+    if (currentPage < Math.ceil(filteredItems.length / itemsPerPage) && !previewOpen) {
       currentPage++;
       displayCurrentPageItems();
       updatePaginationButtons();
@@ -310,15 +304,15 @@ cardLink.textContent = 'Open';
   const nextPageButton = document.getElementById('nextPageButton');
   nextPageButton.addEventListener('click', handleNextPageClick);
 
-  // Initial setup
+  // Initialize page
   filteredItems = itemsData;
-  displayCurrentPageItems();
   updatePaginationButtons();
+  displayCurrentPageItems();
 
-  // Dynamically update the current year
-  const currentYearElement = document.getElementById('currentYear');
+  // Get current year for footer
   const currentYear = new Date().getFullYear();
-  currentYearElement.textContent = currentYear;
+  document.getElementById('currentYear').textContent = currentYear;
+
 </script>
 </body>
 </html>
