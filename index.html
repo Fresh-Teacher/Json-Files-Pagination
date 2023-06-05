@@ -5,61 +5,93 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     /* Add your custom styles here */
+/* Styling for the search bar */
+.search-bar {
+  margin-bottom: 20px;
+}
 
-    /* Styling for the search bar */
-    .search-bar {
-      margin-bottom: 20px;
-    }
+/* Styling for the footer */
+.footer {
+  background-color: #525354;
+  color: #ffffff;
+  padding: 0.5rem 0; /* Decreased padding for the top and bottom */
+  text-align: center;
+  margin-top: 2rem; /* Added margin between footer and pagination buttons */
+}
 
-    /* Styling for the footer */
-    .footer {
-      background-color: #525354;
-      color: #ffffff;
-      padding: 0.5rem 0; /* Decreased padding for the top and bottom */
-      text-align: center;
-      margin-top: 2rem; /* Added margin between footer and pagination buttons */
-    }
+.footer a {
+  color: inherit;
+  text-decoration: none;
+}
 
-    .footer a {
-      color: inherit;
-      text-decoration: none;
-    }
+.footer a:hover {
+  text-decoration: underline;
+}
 
-    .footer a:hover {
-      text-decoration: underline;
-    }
+/* Styling for the floating WhatsApp button */
+.floating-whatsapp {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  padding: 10px;
+}
 
-    /* Styling for the floating WhatsApp button */
-    .floating-whatsapp {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 999;
-      padding: 10px;
-    }
+/* Styling for the app bar */
+.navbar {
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 0.5rem 0; /* Decreased padding for the top and bottom */
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
 
-    /* Styling for the app bar */
-    .navbar {
-      width: 100%;
-      background-color: #f8f9fa;
-      padding: 0.5rem 0; /* Decreased padding for the top and bottom */
-      position: sticky;
-      top: 0;
-      z-index: 999;
-    }
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
 
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
-    }
+.navbar-brand img {
+  height: 30px;
+  margin-right: 10px;
+}
 
-    .navbar-brand img {
-      height: 30px;
-      margin-right: 10px;
-    }
-  </style>
+/* Styling for the overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.overlay iframe {
+  width: 100%;
+  height: 500px;
+}
+
+/* Styling for the close button */
+.close-preview {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  z-index: 99999;
+}
+
+</style>
 </head>
 <body>
   <nav class="navbar">
@@ -71,824 +103,406 @@
       <p class="text-center"><strong><em>Learn. Unlearn. Relearn</em></strong></p>
     </div>
   </nav>
-
   <div class="container">
     <!-- Search bar -->
     <div class="search-bar">
       <input type="text" id="searchInput" class="form-control" placeholder="Search items...">
     </div>
+<!-- Item cards -->
+<div class="row" id="itemContainer">
+  <!-- Items will be dynamically populated here -->
+</div>
 
-    <!-- Item cards -->
-    <div class="row" id="itemContainer">
-      <!-- Items will be dynamically populated here -->
-    </div>
-
-    <!-- Pagination buttons -->
-    <div class="d-flex justify-content-center mt-4">
-      <button id="prevPageButton" class="btn btn-primary" style="display: none;">Previous Page</button>
-      <span id="currentPage" class="mr-3"></span>
-      <button id="nextPageButton" class="btn btn-primary">Next Page</button>
-    </div>
+<!-- Pagination buttons -->
+<div class="d-flex justify-content-center mt-4">
+  <button id="prevPageButton" class="btn btn-primary" style="display: none;">Previous Page</button>
+  <span id="currentPage" class="mr-3"></span>
+  <button id="nextPageButton" class="btn btn-primary">Next Page</button>
+</div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p>Coded with <span style="color: red;">❦</span> by Mutumba Jesse Paul<br>
+      &copy; Fresh Teacher Software <span id="currentYear"></span><br>
+      <a href="tel:+256750687790">0750687790</a> / <a href="tel:+256786812837">0786812837</a>
+    </p>
   </div>
+</footer>
+<!-- Floating WhatsApp button -->
+<a href="https://api.whatsapp.com/send?phone=+256750687790&text=Hi%20Fresh%20Teacher" class="floating-whatsapp">
+  <img src="whatsapp-logo.png" alt="WhatsApp" width="50">
+</a>
+<script>
+  const itemsPerPage = 21; // Number of items to display per page
+  let currentPage = parseInt(localStorage.getItem('currentPage')) || 1; // Current page number
+  let filteredItems = []; // Array to store filtered items
+  let previewOpen = false; // Track if preview is open
 
-  <footer class="footer">
-    <div class="container">
-      <p>Coded with <span style="color: red;">❦</span> by Mutumba Jesse Paul<br>
-        &copy; Fresh Teacher Software <span id="currentYear"></span><br>
-        <a href="tel:+256750687790">0750687790</a> / <a href="tel:+256786812837">0786812837</a>
-      </p>
-    </div>
-  </footer>
+  // Sample JSON data (replace with your actual data)
+  const itemsData = [
+  {
+                title: 'BUKOMANSIMBI MOCK SCIENCE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/BUKOMANSIMBI MOCK SCIENCE.pdf',
+            },
+            {
+                title: 'BUKOMANSIMBI MOCK SST',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/BUKOMANSIMBI MOCK SST.pdf',
+            },
+            {
+                title: 'ENG  PLE-2',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENG  PLE-2.pdf',
+            },
+            {
+                title: 'ENG  PLE-3_040522',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENG  PLE-3_040522.pdf',
+            },
+            {
+                title: 'ENG  PLE-4_040500',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENG  PLE-4_040500.pdf',
+            },
+            {
+                title: 'ENG  PLE-5_040537',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENG  PLE-5_040537.pdf',
+            },
+            {
+                title: 'ENG 6',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENG 6.pdf',
+            },
+            {
+                title: 'ENG 11',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENG 11.pdf',
+            },
+            {
+                title: 'Eng Lamennais Pre-PLE 2022',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Eng Lamennais Pre-PLE 2022.pdf',
+            },
+            {
+                title: 'ENGLISH LANGUAGE BLUEPRINT',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENGLISH LANGUAGE BLUEPRINT.pdf',
+            },
+            {
+                title: 'ENGLISH PLE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENGLISH PLE.pdf',
+            },
+            {
+                title: 'ENGLISH PRE-PLE SET 2 -2022',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ENGLISH PRE-PLE SET 2 -2022.pdf',
+            },
+            {
+                title: 'English Sipro',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/English Sipro.pdf',
+            },
+            {
+                title: 'FINAL ABBREVIATIONS EDITED',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/FINAL ABBREVIATIONS EDITED.pdf',
+            },
+            {
+                title: 'GBS MTC PRE PLE EVALUATION SET',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/GBS MTC PRE PLE EVALUATION SET.pdf',
+            },
+            {
+                title: 'Hill Side.SCI PRE PLE SET ELEVEN',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hill Side.SCI PRE PLE SET ELEVEN.pdf',
+            },
+            {
+                title: 'Hillside MTC Pre PLE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside MTC Pre PLE.pdf',
+            },
+            {
+                title: 'Hillside Pre PLE Set 2',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside Pre PLE Set 2.pdf',
+            },
+            {
+                title: 'Hillside PRE PLE Set 3',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside PRE PLE Set 3.pdf',
+            },
+            {
+                title: 'Hillside SST PRE PLE SET ELEVEN',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside SST PRE PLE SET ELEVEN.pdf',
+            },
+            {
+                title: 'Hillside SST PRE PLE SET TEN',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside SST PRE PLE SET TEN.pdf',
+            },
+            {
+                title: 'Hillside.ENG PRE PLE SET TEN',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside.ENG PRE PLE SET TEN.pdf',
+            },
+            {
+                title: 'Hillside.ENG PRE PLE SET TWELVE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside.ENG PRE PLE SET TWELVE.pdf',
+            },
+            {
+                title: 'Hillside.SCI PRE PLE SET TEN',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside.SCI PRE PLE SET TEN.pdf',
+            },
+            {
+                title: 'Hillside.SCI PRE PLE SET TWELVE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside.SCI PRE PLE SET TWELVE.pdf',
+            },
+            {
+                title: 'Hillside.SST PRE PLE SET TWELVE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hillside.SST PRE PLE SET TWELVE.pdf',
+            },
+            {
+                title: 'Hoima city Pre -ple',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hoima city Pre -ple.pdf',
+            },
+            {
+                title: 'Hoima city Pre ple',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/Hoima city Pre ple.pdf',
+            },
+            {
+                title: 'HOIMA CITY PRE-PLE, 2022',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/HOIMA CITY PRE-PLE, 2022.pdf',
+            },
+            {
+                title: 'ITEM 5 SCIENCE',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ITEM 5 SCIENCE.pdf',
+            },
+            {
+                title: 'ITEM 6 MATH',
+                description: 'Primary Seven',
+                price: 10000,
+                link: 'https://freshteacher.software/ITEM 6 MATH.pdf',
+            },
+  {
+              title: 'ITEM 7 MATH',
+              description: 'Primary Seven',
+              price: 10000,
+              link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
+          },
+          {
+              title: 'jubra exam',
+              description: 'Primary Seven',
+              price: 10000,
+              link: 'https://freshteacher.software/jubra exam.pdf',
+          },
+          {
+              title: 'KCC ENG',
+              description: 'Primary Seven',
+              price: 10000,
+              link: 'https://freshteacher.software/KCC ENG.pdf',
+          },   
+  ];
 
-  <!-- Floating WhatsApp button -->
-  <a href="https://api.whatsapp.com/send?phone=+256750687790&text=Hi%20Fresh%20Teacher" class="floating-whatsapp">
-    <img src="whatsapp-logo.png" alt="WhatsApp" width="50">
-  </a>
+  // Function to display items on the current page
+  function displayItems(items) {
+    const itemContainer = document.getElementById('itemContainer');
+    itemContainer.innerHTML = '';
 
-  <script>
-    const itemsPerPage = 21; // Number of items to display per page
-    let currentPage = parseInt(localStorage.getItem('currentPage')) || 1; // Current page number
-    let filteredItems = []; // Array to store filtered items
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
 
-    // Sample JSON data (replace with your actual data)
-    const itemsData = [
-      {
-        title: 'SST P.7 LESSON NOTES.pdf',
-        description: 'SST',
-        price: 5000,
-        link: 'https://freshteacher.software/SST P.7 LESSON NOTES.pdf',
-      },
-      {
-        title: 'SST P.7 LESSON NOTES.pdf',
-        description: 'SST',
-        price: 5000,
-        link: 'https://freshteacher.software/SST P.7 LESSON NOTES.pdf',
-      },
-      {
-        title: 'SST P.7 LESSON NOTES.pdf',
-        description: 'SST',
-        price: 5000,
-        link: 'https://freshteacher.software/SST P.7 LESSON NOTES.pdf',
-      },
-      {
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },{
-                title: 'ITEM 7 MATH',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-            },
-            {
-                title: 'jubra exam',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/jubra exam.pdf',
-            },
-            {
-                title: 'KCC ENG',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCC ENG.pdf',
-            },
-            {
-                title: 'KCCA MOCKS ENGLISH @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS ENGLISH @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS MATHS @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS MATHS @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MOCKS SCIE @ GALIWANGO',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MOCKS SCIE @ GALIWANGO.pdf',
-            },
-            {
-                title: 'KCCA MTC',
-                description: 'Primary Seven',
-                price: 10000,
-                link: 'https://freshteacher.software/KCCA MTC.pdf',
-            },
-    ];
+      const card = document.createElement('div');
+      card.classList.add('col-md-4', 'mb-4');
 
-    // Function to display items on the current page
-    function displayItems(items) {
-      const itemContainer = document.getElementById('itemContainer');
-      itemContainer.innerHTML = '';
+      const cardBody = document.createElement('div');
+      cardBody.classList.add('card', 'h-100');
 
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
+      const cardTitle = document.createElement('h5');
+      cardTitle.classList.add('card-title');
+      cardTitle.textContent = item.title;
 
-        const card = document.createElement('div');
-        card.classList.add('col-md-4', 'mb-4');
+      const cardDescription = document.createElement('p');
+      cardDescription.classList.add('card-text');
+      cardDescription.textContent = item.description;
 
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card', 'h-100');
+      const cardPrice = document.createElement('p');
+      cardPrice.classList.add('card-text');
+      cardPrice.textContent = `Price: $${item.price}`;
 
-        const cardTitle = document.createElement('h5');
-        cardTitle.classList.add('card-title');
-        cardTitle.textContent = item.title;
+      const cardLink = document.createElement('a');
+      cardLink.classList.add('btn', 'btn-primary');
+      cardLink.href = item.link;
+      cardLink.target = '_blank';
+      cardLink.textContent = 'Download';
 
-        const cardDescription = document.createElement('p');
-        cardDescription.classList.add('card-text');
-        cardDescription.textContent = item.description;
+      const cardPreview = document.createElement('button');
+      cardPreview.classList.add('btn', 'btn-secondary', 'mt-2');
+      cardPreview.textContent = 'Preview';
+      cardPreview.addEventListener('click', () => {
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlay');
 
-        const cardPrice = document.createElement('p');
-        cardPrice.classList.add('card-text');
-        cardPrice.textContent = `Price: $${item.price}`;
+        const iframe = document.createElement('iframe');
+        iframe.src = item.link;
+        iframe.width = '100%';
+        iframe.height = '500px';
 
-        const cardLink = document.createElement('a');
-        cardLink.classList.add('btn', 'btn-primary');
-        cardLink.href = item.link;
-        cardLink.target = '_blank';
-        cardLink.textContent = 'Download';
-
-        const cardPreview = document.createElement('button');
-        cardPreview.classList.add('btn', 'btn-secondary', 'mt-2');
-        cardPreview.textContent = 'Preview';
-        cardPreview.addEventListener('click', () => {
-          const iframe = document.createElement('iframe');
-          iframe.src = item.link;
-          iframe.width = '100%';
-          iframe.height = '500px';
-          cardBody.appendChild(iframe);
+        const closeButton = document.createElement('button');
+        closeButton.classList.add('btn', 'btn-primary', 'close-button');
+        closeButton.textContent = 'Close Preview';
+        closeButton.addEventListener('click', () => {
+          previewOpen = false;
+          document.body.removeChild(overlay);
+          document.body.style.overflow = 'auto';
         });
 
-        cardBody.appendChild(cardTitle);
-        cardBody.appendChild(cardDescription);
-        cardBody.appendChild(cardPrice);
-        cardBody.appendChild(cardLink);
-        cardBody.appendChild(cardPreview);
-        card.appendChild(cardBody);
-        itemContainer.appendChild(card);
-      }
-    }
-
-    // Function to filter items based on the search query
-    function filterItems(query) {
-      const filtered = itemsData.filter((item) => {
-        const title = item.title.toLowerCase();
-        const description = item.description.toLowerCase();
-        return title.includes(query) || description.includes(query);
+        overlay.appendChild(iframe);
+        overlay.appendChild(closeButton);
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+        previewOpen = true;
       });
-      return filtered;
+
+      cardBody.appendChild(cardTitle);
+      cardBody.appendChild(cardDescription);
+      cardBody.appendChild(cardPrice);
+      cardBody.appendChild(cardLink);
+      cardBody.appendChild(cardPreview);
+      card.appendChild(cardBody);
+      itemContainer.appendChild(card);
     }
+  }
 
-    // Function to handle search input changes
-    function handleSearchInput(event) {
-      const searchQuery = event.target.value.toLowerCase();
-      const filtered = filterItems(searchQuery);
-      filteredItems = filtered;
-      currentPage = 1;
-      updatePaginationButtons();
-      displayCurrentPageItems();
-    }
+  // Function to filter items based on the search query
+  function filterItems(query) {
+    const filtered = itemsData.filter((item) => {
+      const title = item.title.toLowerCase();
+      const description = item.description.toLowerCase();
+      return title.includes(query) || description.includes(query);
+    });
+    return filtered;
+  }
 
-    // Function to display items on the current page
-    function displayCurrentPageItems() {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const itemsToShow = filteredItems.slice(startIndex, endIndex);
-      displayItems(itemsToShow);
-      window.scrollTo(0, 0); // Scroll to top of page
-      document.getElementById('currentPage').textContent = `Page ${currentPage} of ${Math.ceil(filteredItems.length / itemsPerPage)}`;
-      localStorage.setItem('currentPage', currentPage); // Save current page to localStorage
-    }
-
-    // Function to update the state of the pagination buttons
-    function updatePaginationButtons() {
-      const prevPageButton = document.getElementById('prevPageButton');
-      const nextPageButton = document.getElementById('nextPageButton');
-
-      if (currentPage === 1) {
-        prevPageButton.style.display = 'none';
-      } else {
-        prevPageButton.style.display = 'inline';
-      }
-
-      if (currentPage === Math.ceil(filteredItems.length / itemsPerPage)) {
-        nextPageButton.style.display = 'none';
-      } else {
-        nextPageButton.style.display = 'inline';
-      }
-    }
-
-    // Function to handle the previous page button click
-    function handlePrevPageClick() {
-      if (currentPage > 1) {
-        currentPage--;
-        displayCurrentPageItems();
-        updatePaginationButtons();
-      }
-    }
-
-    // Function to handle the next page button click
-    function handleNextPageClick() {
-      const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-      if (currentPage < totalPages) {
-        currentPage++;
-        displayCurrentPageItems();
-        updatePaginationButtons();
-      }
-    }
-
-    // Add event listeners
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', handleSearchInput);
-
-    const prevPageButton = document.getElementById('prevPageButton');
-    prevPageButton.addEventListener('click', handlePrevPageClick);
-
-    const nextPageButton = document.getElementById('nextPageButton');
-    nextPageButton.addEventListener('click', handleNextPageClick);
-
-    // Initial setup
-    filteredItems = itemsData;
-    displayCurrentPageItems();
+  // Function to handle search input changes
+  function handleSearchInput(event) {
+    const searchQuery = event.target.value.toLowerCase();
+    const filtered = filterItems(searchQuery);
+    filteredItems = filtered;
+    currentPage = 1;
     updatePaginationButtons();
+    displayCurrentPageItems();
+  }
 
-    // Dynamically update the current year
-    const currentYearElement = document.getElementById('currentYear');
-    const currentYear = new Date().getFullYear();
-    currentYearElement.textContent = currentYear.toString();
-  </script>
+  // Function to display items on the current page
+  function displayCurrentPageItems() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const itemsToShow = filteredItems.slice(startIndex, endIndex);
+    displayItems(itemsToShow);
+    window.scrollTo(0, 0); // Scroll to top of page
+    document.getElementById('currentPage').textContent = `Page ${currentPage} of ${Math.ceil(filteredItems.length / itemsPerPage)}`;
+    localStorage.setItem('currentPage', currentPage); // Save current page to localStorage
+  }
+
+  // Function to update the state of the pagination buttons
+  function updatePaginationButtons() {
+    const prevPageButton = document.getElementById('prevPageButton');
+    const nextPageButton = document.getElementById('nextPageButton');
+
+    if (currentPage === 1) {
+      prevPageButton.style.display = 'none';
+    } else {
+      prevPageButton.style.display = 'inline';
+    }
+
+    if (currentPage === Math.ceil(filteredItems.length / itemsPerPage)) {
+      nextPageButton.style.display = 'none';
+    } else {
+      nextPageButton.style.display = 'inline';
+    }
+  }
+
+  // Function to handle the previous page button click
+  function handlePrevPageClick() {
+    if (currentPage > 1 && !previewOpen) {
+      currentPage--;
+      displayCurrentPageItems();
+      updatePaginationButtons();
+    }
+  }
+
+  // Function to handle the next page button click
+  function handleNextPageClick() {
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+    if (currentPage < totalPages && !previewOpen) {
+      currentPage++;
+      displayCurrentPageItems();
+      updatePaginationButtons();
+    }
+  }
+
+  // Add event listeners
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', handleSearchInput);
+
+  const prevPageButton = document.getElementById('prevPageButton');
+  prevPageButton.addEventListener('click', handlePrevPageClick);
+
+  const nextPageButton = document.getElementById('nextPageButton');
+  nextPageButton.addEventListener('click', handleNextPageClick);
+
+  // Initial setup
+  filteredItems = itemsData;
+  displayCurrentPageItems();
+  updatePaginationButtons();
+
+  // Dynamically update the current year
+  const currentYearElement = document.getElementById('currentYear');
+  const currentYear = new Date().getFullYear();
+  currentYearElement.textContent = currentYear;
+</script>
 </body>
-
 </html>
