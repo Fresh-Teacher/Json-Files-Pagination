@@ -1,318 +1,152 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    /* Add your custom styles here */
-/* Styling for the search bar */
-.search-bar {
-  margin-bottom: 20px;
-}
+  <link rel="shortcut icon" href="images/KPK_Logo.svg">
+  <title>View PDF</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- AJAX -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <!-- costume css -->
+  <link rel="stylesheet" type="text/css" href="css/flipbook.style.css">
+  <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+  <link rel="stylesheet" type="text/css" href="css/footer.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
-/* Styling for the footer */
-.footer {
-  background-color: #525354;
-  color: #ffffff;
-  padding: 0.5rem 0; /* Decreased padding for the top and bottom */
-  text-align: center;
-  margin-top: 2rem; /* Added margin between footer and pagination buttons */
-}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      const sampleData = [
+        {
+          title: '2020 PLE ENG',
+          description: 'Primary Seven',
+          price: 10000,
+          link: 'https://freshteacher.software/2020 PLE ENG.pdf',
+        },
+        {
+          title: '2022 - PRE-PLE SERIES 2 SCI-GUIDE',
+          description: 'Primary Seven',
+          price: 10000,
+          link: 'https://freshteacher.software/2022 - PRE-PLE SERIES 2 SCI-GUIDE.pdf',
+        },
+        {
+          title: '2022 - PRE-PLE SERIES 22 SCI',
+          description: 'Primary Seven',
+          price: 10000,
+          link: 'https://freshteacher.software/2022 - PRE-PLE SERIES 22 SCI.pdf',
+        },
+      ];
 
-.footer a {
-  color: inherit;
-  text-decoration: none;
-}
+      // Function to load PDF based on selected link
+      function loadPDF(link) {
+        $("#pdfContainer").html(""); // Clear the container
+        const pdfUrl = link;
+        const downloadUrl = link;
 
-.footer a:hover {
-  text-decoration: underline;
-}
+        // Check if PDF viewer is supported
+        if (typeof window.FileReader !== "undefined") {
+          // Create and append the PDF viewer
+          const pdfViewer = $('<iframe src="' + pdfUrl + '" class="pdf-viewer"></iframe>');
+          $("#pdfContainer").append(pdfViewer);
+        } else {
+          // Create and append the download link
+          const downloadLink = $('<a href="' + downloadUrl + '" class="btn btn-primary mt-2 text-white" download>Download File <i class="fas fa-download fa-lg"></i></a>');
+          $("#pdfContainer").append(downloadLink);
+        }
+      }
 
-/* Styling for the floating WhatsApp button */
-.floating-whatsapp {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999;
-  padding: 10px;
-}
+      // Populate the PDF information dynamically
+      const infoSection = $("#info");
+      const cardContainer = $("<div class='container'></div>");
+      infoSection.append(cardContainer);
 
-/* Styling for the app bar */
-.navbar {
-  width: 100%;
-  background-color: #f8f9fa;
-  padding: 0.5rem 0; /* Decreased padding for the top and bottom */
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
+      sampleData.forEach(function(data) {
+        const cardDiv = $("<div class='card shadow'></div>");
+        const rowDiv = $("<div class='row'></div>");
+        const col1Div = $("<div class='col-md-3'></div>");
+        const col2Div = $("<div class='col-md-7 mt-3'></div>");
+        const titleHeading = $("<h3 class='title'></h3>").text(data.title);
+        const buttonDiv = $("<div class='button'></div>");
+        const viewBtn = $("<a class='btn btn-primary mt-2 text-white'>View File <i class='fas fa-book-reader fa-lg'></i></a>");
+        const downloadBtn = $("<a class='btn btn-primary mt-2 text-white'>Download File <i class='fas fa-download fa-lg'></i></a>");
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-}
+        viewBtn.click(function() {
+          loadPDF(data.link);
+        });
 
-.navbar-brand img {
-  height: 30px;
-  margin-right: 10px;
-}
+        downloadBtn.attr("href", data.link);
 
-/* Styling for the overlay */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.overlay iframe {
-  width: 100%;
-  height: 500px;
-}
-
-/* Styling for the close button */
-.close-preview {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #ffffff;
-  color: #000000;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-  z-index: 99999;
-}
-
-</style>
-</head>
-<body>
-  <nav class="navbar">
-    <div class="container">
-      <a class="navbar-brand" href="#">
-        <img src="logo.jpg" alt="Logo">
-        <b>FRESH TEACHERS' APP</b>
-      </a>
-      <p class="text-center"><strong><em>Learn. Unlearn. Relearn</em></strong></p>
-    </div>
-  </nav>
-  <div class="container">
-    <!-- Search bar -->
-    <div class="search-bar">
-      <input type="text" id="searchInput" class="form-control" placeholder="Search items...">
-    </div>
-<!-- Item cards -->
-<div class="row" id="itemContainer">
-  <!-- Items will be dynamically populated here -->
-</div>
-
-<!-- Pagination buttons -->
-<div class="d-flex justify-content-center mt-4">
-  <button id="prevPageButton" class="btn btn-primary" style="display: none;">Previous Page</button>
-  <span id="currentPage" class="mr-3"></span>
-  <button id="nextPageButton" class="btn btn-primary">Next Page</button>
-</div>
-</div>
-<footer class="footer">
-  <div class="container">
-    <p>Coded with <span style="color: red;">❦</span> by Mutumba Jesse Paul<br>
-      &copy; Fresh Teacher Software <span id="currentYear"></span><br>
-      <a href="tel:+256750687790">0750687790</a> / <a href="tel:+256786812837">0786812837</a>
-    </p>
-  </div>
-</footer>
-<!-- Floating WhatsApp button -->
-<a href="https://api.whatsapp.com/send?phone=+256750687790&text=Hi%20Fresh%20Teacher" class="floating-whatsapp">
-  <img src="whatsapp-logo.png" alt="WhatsApp" width="50">
-</a>
-<script>
-  const itemsPerPage = 21; // Number of items to display per page
-  let currentPage = parseInt(localStorage.getItem('currentPage')) || 1; // Current page number
-  let filteredItems = []; // Array to store filtered items
-  let previewOpen = false; // Track if preview is open
-
-  // Sample JSON data (replace with your actual data)
-  const itemsData = [
-    
-  {
-              title: 'ITEM 7 MATH',
-              description: 'Primary Seven',
-              price: 10000,
-              link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-          },
-          {
-              title: 'jubra exam',
-              description: 'Primary Seven',
-              price: 10000,
-              link: 'https://freshteacher.software/jubra exam.pdf',
-          },
-          {
-              title: 'KCC ENG',
-              description: 'Primary Seven',
-              price: 10000,
-              link: 'https://freshteacher.software/KCC ENG.pdf',
-          },  {
-              title: 'ITEM 7 MATH',
-              description: 'Primary Seven',
-              price: 10000,
-              link: 'https://freshteacher.software/ITEM 7 MATH.pdf',
-          },
-          {
-              title: 'jubra exam',
-              description: 'Primary Seven',
-              price: 10000,
-              link: 'https://freshteacher.software/jubra exam.pdf',
-          },
-          {
-              title: 'KCC ENG',
-              description: 'Primary Seven',
-              price: 10000,
-              link: 'https://freshteacher.software/KCC ENG.pdf',
-          },   
-  ];
-
-  // Function to display items on the current page
-  function displayItems(items) {
-    const itemContainer = document.getElementById('itemContainer');
-    itemContainer.innerHTML = '';
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-
-      const card = document.createElement('div');
-      card.classList.add('col-md-4', 'mb-4');
-
-      const cardBody = document.createElement('div');
-      cardBody.classList.add('card', 'h-100');
-
-      const cardTitle = document.createElement('h5');
-      cardTitle.classList.add('card-title');
-      cardTitle.textContent = item.title;
-
-      const cardDescription = document.createElement('p');
-      cardDescription.classList.add('card-text');
-      cardDescription.textContent = item.description;
-
-      const cardPrice = document.createElement('p');
-      cardPrice.classList.add('card-text');
-      cardPrice.textContent = `Price: $${item.price}`;
-
-      const cardLink = document.createElement('a');
-cardLink.classList.add('btn', 'btn-primary');
-cardLink.href = item.link;
-cardLink.target = '_blank';
-cardLink.textContent = 'Open';
-
-      const cardPreview = document.createElement('button');
-      cardPreview.classList.add('btn', 'btn-secondary', 'mt-2');
-      cardPreview.textContent = 'Preview';
-      cardPreview.addEventListener('click', () => {
-        window.open(item.link, '_blank').print();
+        col2Div.append(titleHeading);
+        buttonDiv.append(viewBtn);
+        buttonDiv.append(downloadBtn);
+        col2Div.append(buttonDiv);
+        rowDiv.append(col1Div);
+        rowDiv.append(col2Div);
+        cardDiv.append(rowDiv);
+        cardContainer.append(cardDiv);
       });
 
-      cardBody.appendChild(cardTitle);
-      cardBody.appendChild(cardDescription);
-      cardBody.appendChild(cardPrice);
-      cardBody.appendChild(cardLink);
-      cardBody.appendChild(cardPreview);
-      card.appendChild(cardBody);
-      itemContainer.appendChild(card);
-    }
-  }
-
-  // Function to filter items based on the search query
-  function filterItems(query) {
-    const filtered = itemsData.filter((item) => {
-      const title = item.title.toLowerCase();
-      const description = item.description.toLowerCase();
-      return title.includes(query) || description.includes(query);
+      // Load the first PDF by default
+      loadPDF(sampleData[0].link);
     });
-    return filtered;
-  }
+  </script>
 
-  // Function to handle search input changes
-  function handleSearchInput(event) {
-    const searchQuery = event.target.value.toLowerCase();
-    const filtered = filterItems(searchQuery);
-    filteredItems = filtered;
-    currentPage = 1;
-    updatePaginationButtons();
-    displayCurrentPageItems();
-  }
-
-  // Function to display items on the current page
-  function displayCurrentPageItems() {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const itemsToShow = filteredItems.slice(startIndex, endIndex);
-    displayItems(itemsToShow);
-    window.scrollTo(0, 0); // Scroll to top of page
-    document.getElementById('currentPage').textContent = `Page ${currentPage} of ${Math.ceil(filteredItems.length / itemsPerPage)}`;
-    localStorage.setItem('currentPage', currentPage); // Save current page to localStorage
-  }
-
-  // Function to update the state of the pagination buttons
-  function updatePaginationButtons() {
-    const prevPageButton = document.getElementById('prevPageButton');
-    const nextPageButton = document.getElementById('nextPageButton');
-
-    if (currentPage === 1) {
-      prevPageButton.style.display = 'none';
-    } else {
-      prevPageButton.style.display = 'inline';
+  <style>
+    body {
+      background-color: #f6f6f6;
     }
-
-    if (currentPage === Math.ceil(filteredItems.length / itemsPerPage)) {
-      nextPageButton.style.display = 'none';
-    } else {
-      nextPageButton.style.display = 'inline';
+    #author {
+      font-size: 15px;
+      font-weight: bold;
+      color: #0186c9;
     }
-  }
-
-  // Function to handle the previous page button click
-  function handlePrevPageClick() {
-    if (currentPage > 1 && !previewOpen) {
-      currentPage--;
-      displayCurrentPageItems();
-      updatePaginationButtons();
+    #date {
+      margin-left: 10px;
+      font-size: 15px;
+      color: #819196;
     }
-  }
-
-  // Function to handle the next page button click
-  function handleNextPageClick() {
-    if (currentPage < Math.ceil(filteredItems.length / itemsPerPage) && !previewOpen) {
-      currentPage++;
-      displayCurrentPageItems();
-      updatePaginationButtons();
+    #size {
+      font-size: 15px;
+      color: #819196;
     }
-  }
+    #description {
+      margin-top: 20px;
+      font-weight: lighter;
+    }
+    .pdf-viewer {
+      width: 100%;
+      height: 600px;
+    }
+  </style>
+</head>
 
-  // Add event listeners
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', handleSearchInput);
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+    <a class="navbar-brand" href="index.html">
+    </a>
+  </nav>
+  <!-- End Of Navbar -->
 
-  const prevPageButton = document.getElementById('prevPageButton');
-  prevPageButton.addEventListener('click', handlePrevPageClick);
+  <br><br><br><br><br>
 
-  const nextPageButton = document.getElementById('nextPageButton');
-  nextPageButton.addEventListener('click', handleNextPageClick);
+  <!-- PDF INFORMATION -->
+  <section class="info" id="info">
+    <div class="container">
+      <!-- PDF cards will be dynamically generated here -->
+    </div>
+  </section>
+  <!-- END OF PDF INFORMATION -->
 
-  // Initialize page
-  filteredItems = itemsData;
-  updatePaginationButtons();
-  displayCurrentPageItems();
+  <!-- PDF container -->
+  <div id="pdfContainer"></div>
 
-  // Get current year for footer
-  const currentYear = new Date().getFullYear();
-  document.getElementById('currentYear').textContent = currentYear;
-
-</script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 </body>
 </html>
